@@ -1,77 +1,96 @@
-import React, { useRef } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 const Preview = () => {
-  const resumeRef = useRef();
+  const [data, setData] = useState(null);
 
-  const data = JSON.parse(localStorage.getItem("resumeData"));
-
-  const downloadPDF = () => {
-    const input = resumeRef.current;
-
-    html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-
-      const pdf = new jsPDF("p", "mm", "a4");
-
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+  useEffect(() => {
+    const fetchResume = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/resume/latest"
+        );
+        setData(response.data);
+      } catch (error) {
+        console.log(error);
       }
+    };
 
-      pdf.save("resume.pdf");
-    });
+    fetchResume();
+  }, []);
+
+  const handleDownload = () => {
+    const doc = new jsPDF();
+    doc.text("Resume", 20, 20);
+    doc.save("Resume.pdf");
   };
+
+  if (!data) {
+    return <h2>Loading Resume...</h2>;
+  }
 
   return (
     <div className="preview-container">
-      <div className="resume-box" ref={resumeRef}>
-        <h1>{data?.fullName}</h1>
-        <p>{data?.email}</p>
-        <p>{data?.phone}</p>
-        <p>{data?.address}</p>
+      <div className="resume-box">
 
-        <h3>Career Objective</h3>
-        <p>{data?.objective}</p>
+        {/* HEADER */}
+        <div className="resume-header">
+          <h1>{data.fullName}</h1>
+          <h2>SOFTWARE DEVELOPER</h2>
+          <div className="header-line"></div>
+        </div>
 
-        <h3>Education</h3>
-        <p>{data?.education}</p>
+        <div className="contact-info">
+  <p>📞 {data.phone}</p>
+  <p>✉️ {data.email}</p>
+  <p>🌐 yourwebsite.com</p>
+  <p>📍 {data.address}</p>
+</div>
 
-        <h3>Skills</h3>
-        <p>{data?.skills}</p>
+        {/* MAIN CONTENT */}
+        <div className="resume-content">
 
-        <h3>Experience</h3>
-        <p>{data?.experience}</p>
+          {/* LEFT SIDE */}
+          <div className="left-side">
+            <h3>EDUCATION</h3>
+            <p>{data.education}</p>
 
-        <h3>Projects</h3>
-        <p>{data?.projects}</p>
+            <h3>SKILLS</h3>
+            <p>{data.skills}</p>
 
-        <h3>Certifications</h3>
-        <p>{data?.certifications}</p>
+            <h3>LANGUAGES</h3>
+            <p>{data.languages}</p>
 
-        <h3>Languages</h3>
-        <p>{data?.languages}</p>
+            <h3>HOBBIES</h3>
+            <p>{data.hobbies}</p>
+          </div>
 
-        <h3>Hobbies</h3>
-        <p>{data?.hobbies}</p>
+          {/* RIGHT SIDE */}
+          <div className="right-side">
+            <h3>PROFILE SUMMARY</h3>
+            <p>{data.objective}</p>
+
+            <h3>WORK EXPERIENCE</h3>
+            <p>{data.experience}</p>
+
+            <h3>PROJECTS</h3>
+            <p>{data.projects}</p>
+
+            <h3>CERTIFICATIONS</h3>
+            <p>{data.certifications}</p>
+          </div>
+
+        </div>
+
+        {/* DOWNLOAD BUTTON */}
+        <div className="download-btn">
+          <button onClick={handleDownload}>
+            Download Resume
+          </button>
+        </div>
+
       </div>
-
-      <button onClick={downloadPDF}>
-        Download PDF
-      </button>
     </div>
   );
 };

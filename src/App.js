@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
 import ResumeForm from "./pages/ResumeForm";
@@ -9,13 +9,13 @@ import "./App.css";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/resume-form" element={<ResumeForm />} />
+        <Route path="/form" element={<ResumeForm />} />
         <Route path="/preview" element={<Preview />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 

@@ -1,3 +1,5 @@
+// src/pages/Home.jsx
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,12 +8,19 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1>AI Resume Maker</h1>
-      <p>Create your professional resume in minutes</p>
+      <div className="home-box">
+        <h1>AI Resume Maker</h1>
 
-      <button onClick={() => navigate("/resume-form")}>
-        Create Resume
-      </button>
+        <p>
+          Create your professional and attractive resume
+          in just a few minutes with a beautiful modern
+          design.
+        </p>
+
+        <button onClick={() => navigate("/form")}>
+          Create Resume
+        </button>
+      </div>
     </div>
   );
 };
